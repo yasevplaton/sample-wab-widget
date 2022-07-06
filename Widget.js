@@ -19,13 +19,10 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
 ) {
   var clazz = declare([BaseWidget], {
     baseClass: "jimu-test-best-widget",
+    events: [],
     postCreate: function () {
       this.inherited(arguments);
       this.userLink.setAttribute("href", this.config.link);
-    },
-
-    startup: function () {
-      this.inherited(arguments);
     },
 
     _getMapId: function () {
@@ -34,10 +31,19 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
 
     onOpen() {
       console.log("open");
+      console.log(this);
+      const clickEvent = this.map.on("click", (event) => {
+        console.log("click");
+        const { mapPoint } = event;
+        this.coordBlock.innerText = `X: ${mapPoint.x}, Y: ${mapPoint.y}`;
+      });
+      this.events.push(clickEvent);
     },
 
     onClose() {
       console.log("close");
+      this.events.forEach((ev) => ev.remove());
+      this.events = [];
     },
   });
   return clazz;
