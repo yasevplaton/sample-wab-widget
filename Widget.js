@@ -18,6 +18,11 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
   BaseWidget
 ) {
   var clazz = declare([BaseWidget], {
+    postCreate: function () {
+      this.inherited(arguments);
+      this.userLink.setAttribute("href", this.config.link);
+    },
+
     _getMapId: function () {
       alert(this.map.id);
     },
