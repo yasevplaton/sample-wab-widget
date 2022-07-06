@@ -10,7 +10,7 @@
   "properties": {
     "hasConfig": false,
     "hasStyle": true,
-    "hasLocale": false,
+    "hasLocale": true,
     "hasUIFile": true,
     "hasSettingPage": false
   }
