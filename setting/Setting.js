@@ -19,7 +19,7 @@ define(["dojo/_base/declare", "jimu/BaseWidgetSetting"], function (
   BaseWidgetSetting
 ) {
   return declare([BaseWidgetSetting], {
-    baseClass: "jimu-widget-test-wab-setting",
+    baseClass: "jimu-test-best-widget-setting",
 
     postCreate: function () {
       //the config object is passed in

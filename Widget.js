@@ -18,6 +18,7 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
   BaseWidget
 ) {
   var clazz = declare([BaseWidget], {
+    baseClass: "jimu-test-best-widget",
     postCreate: function () {
       this.inherited(arguments);
       this.userLink.setAttribute("href", this.config.link);
