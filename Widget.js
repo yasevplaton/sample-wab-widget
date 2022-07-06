@@ -13,10 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 ///////////////////////////////////////////////////////////////////////////
-define(["dojo/_base/declare", "jimu/BaseWidget"], function (
-  declare,
-  BaseWidget
-) {
+define([
+  "dojo/_base/declare",
+  "jimu/BaseWidget",
+  "esri/geometry/webMercatorUtils",
+  "esri/geometry/Point",
+  "./Utils",
+], function (declare, BaseWidget, wmUtils, Point, utils) {
   var clazz = declare([BaseWidget], {
     baseClass: "jimu-test-best-widget",
     events: [],
@@ -30,18 +33,23 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
     },
 
     onOpen() {
-      console.log("open");
-      console.log(this);
       const clickEvent = this.map.on("click", (event) => {
-        console.log("click");
+        console.log(event);
         const { mapPoint } = event;
-        this.coordBlock.innerText = `X: ${mapPoint.x}, Y: ${mapPoint.y}`;
+        const point = new Point(mapPoint);
+        const latLonPoint = wmUtils.webMercatorToGeographic(point);
+        const lon = utils.round(latLonPoint.x, 100);
+        const lat = utils.round(latLonPoint.y, 100);
+        this.coordBlock.innerText = `Lon: ${lon}, Lat: ${lat}`;
       });
       this.events.push(clickEvent);
     },
 
     onClose() {
-      console.log("close");
+      this.resetEvents();
+    },
+
+    resetEvent() {
       this.events.forEach((ev) => ev.remove());
       this.events = [];
     },
