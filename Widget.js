@@ -24,8 +24,20 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
       this.userLink.setAttribute("href", this.config.link);
     },
 
+    startup: function () {
+      this.inherited(arguments);
+    },
+
     _getMapId: function () {
       alert(this.map.id);
+    },
+
+    onOpen() {
+      console.log("open");
+    },
+
+    onClose() {
+      console.log("close");
     },
   });
   return clazz;
