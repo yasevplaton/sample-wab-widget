@@ -33,25 +33,38 @@ define([
     },
 
     onOpen() {
-      const clickEvent = this.map.on("click", (event) => {
-        console.log(event);
-        const { mapPoint } = event;
+      this.map.setInfoWindowOnClick(false);
+      const clickEvent = this.map.on("click", this.onMapClick.bind(this));
+      this.events.push(clickEvent);
+    },
+
+    onClose() {
+      this.resetState();
+    },
+
+    resetEvents() {
+      this.events.forEach((ev) => ev.remove());
+      this.events = [];
+    },
+
+    resetState() {
+      this.resetEvents();
+      this.map.setInfoWindowOnClick(true);
+    },
+
+    onMapClick(event) {
+      const { mapPoint } = event;
+      if (this.config.units === "wm") {
+        const x = utils.round(mapPoint.x, 100);
+        const y = utils.round(mapPoint.y, 100);
+        this.coordBlock.innerText = `X: ${x}, Y: ${y}`;
+      } else {
         const point = new Point(mapPoint);
         const latLonPoint = wmUtils.webMercatorToGeographic(point);
         const lon = utils.round(latLonPoint.x, 100);
         const lat = utils.round(latLonPoint.y, 100);
         this.coordBlock.innerText = `Lon: ${lon}, Lat: ${lat}`;
-      });
-      this.events.push(clickEvent);
-    },
-
-    onClose() {
-      this.resetEvents();
-    },
-
-    resetEvent() {
-      this.events.forEach((ev) => ev.remove());
-      this.events = [];
+      }
     },
   });
   return clazz;

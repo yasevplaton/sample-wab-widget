@@ -14,26 +14,30 @@
 // limitations under the License.
 ///////////////////////////////////////////////////////////////////////////
 
-define(["dojo/_base/declare", "jimu/BaseWidgetSetting"], function (
-  declare,
-  BaseWidgetSetting
-) {
-  return declare([BaseWidgetSetting], {
+define([
+  "dojo/_base/declare",
+  "jimu/BaseWidgetSetting",
+  "dijit/_WidgetsInTemplateMixin",
+], function (declare, BaseWidgetSetting, _WidgetsInTemplateMixin) {
+  return declare([BaseWidgetSetting, _WidgetsInTemplateMixin], {
     baseClass: "jimu-test-best-widget-setting",
-
     postCreate: function () {
       //the config object is passed in
       this.setConfig(this.config);
     },
 
     setConfig: function (config) {
-      this.linkInput.value = config.link;
+      if (config.units) {
+        this.unitsSelect.set("value", config.units);
+      }
+      this.linkInput.set("value", config.link);
     },
 
     getConfig: function () {
       //WAB will get config object through this method
       return {
-        link: this.linkInput.value,
+        link: this.linkInput.get("value"),
+        units: this.unitsSelect.get("value"),
       };
     },
   });
