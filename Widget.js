@@ -26,6 +26,10 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
     _getMapId: function () {
       alert(this.map.id);
     },
+
+    _alertInput: function () {
+      alert(this.userInput.value);
+    },
   });
   return clazz;
 });
