@@ -21,6 +21,17 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
     baseClass: "jimu-test-best-widget",
     events: [],
 
+    postCreate: function () {
+      this.inherited(arguments);
+      const rect = this.userLink.getBoundingClientRect();
+      console.log(rect);
+    },
+
+    startup: function () {
+      const rect = this.userLink.getBoundingClientRect();
+      console.log(rect);
+    },
+
     _getMapId: function () {
       alert(this.map.id);
     },
