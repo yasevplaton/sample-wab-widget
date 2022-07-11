@@ -20,10 +20,6 @@ define(["dojo/_base/declare", "jimu/BaseWidget"], function (
   var clazz = declare([BaseWidget], {
     baseClass: "jimu-test-best-widget",
     events: [],
-    postCreate: function () {
-      this.inherited(arguments);
-      this.userLink.setAttribute("href", this.config.link);
-    },
 
     _getMapId: function () {
       alert(this.map.id);
