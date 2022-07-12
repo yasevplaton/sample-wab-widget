@@ -13,17 +13,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 ///////////////////////////////////////////////////////////////////////////
-define(["dojo/_base/declare", "jimu/BaseWidget"], function (
-  declare,
-  BaseWidget
-) {
+define([
+  "dojo/_base/declare",
+  "jimu/BaseWidget",
+  "esri/tasks/QueryTask",
+  "esri/tasks/query",
+  "esri/geometry/Polygon",
+  "esri/symbols/SimpleFillSymbol",
+  "esri/graphic",
+], function (declare, BaseWidget, QueryTask, Query, Polygon, SFS, Graphic) {
   var clazz = declare([BaseWidget], {
+    eventHandlers: [],
+
+    postCreate: function () {
+      this.inherited(arguments);
+    },
+
+    startup: function () {
+      this.inherited(arguments);
+    },
+
+    onOpen: function () {
+      console.log(this.map);
+      const eventHandler = this.map.on("click", (e) => {
+        const { x, y } = e.mapPoint;
+        console.log("click on map");
+        this.coordBlock.innerText = `X: ${x}, Y: ${y}`;
+      });
+      this.eventHandlers.push(eventHandler);
+    },
+
+    onClose: function () {
+      this.eventHandlers.forEach((evh) => evh.remove());
+    },
+
     _getMapId: function () {
       alert(this.map.id);
     },
 
-    _alertInput: function () {
-      alert(this.userInput.value);
+    selectTopCountries: function () {
+      const queryTask = new QueryTask(
+        "https://services3.arcgis.com/PVrhXRCzjs03PIMX/arcgis/rest/services/Countries_v2/FeatureServer/0"
+      );
+
+      const query = new Query();
+      query.where = "1=1";
+      query.outFields = ["NAME", "POP_EST"];
+      query.returnGeometry = true;
+      query.orderByFields = ["POP_EST DESC"];
+      queryTask.execute(query, (result) => {
+        const { features } = result;
+        const top5Features = features.slice(0, 4);
+        top5Features.forEach((f) => {
+          const polygon = new Polygon(f.geometry);
+          this.map.graphics.add(new Graphic(polygon, new SFS(), f.attributes));
+        });
+      });
     },
   });
   return clazz;

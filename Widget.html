@@ -11,11 +11,9 @@
     class="jimu-btn"
     data-dojo-attach-event="click:_getMapId"
   />
-  <div>
-    <label for="userInput">Enter something</label>
-    <input type="text" id="userInput" data-dojo-attach-point="userInput" />
-    <button class="jimu-button" data-dojo-attach-event="click:_alertInput">
-      Alert input
-    </button>
-  </div>
+  <p>Coordinates:</p>
+  <div data-dojo-attach-point="coordBlock"></div>
+  <button class="button-6" data-dojo-attach-event="click:selectTopCountries">
+    Select top 5 countries by population
+  </button>
 </div>
