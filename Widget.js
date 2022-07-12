@@ -13,27 +13,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 ///////////////////////////////////////////////////////////////////////////
-define(["dojo/_base/declare", "jimu/BaseWidget"], function (
+define([
+  "dojo/_base/declare",
+  "jimu/BaseWidget",
+  "esri/tasks/query",
+  "esri/tasks/QueryTask",
+  "esri/graphic",
+  "esri/symbols/SimpleFillSymbol",
+  "esri/geometry/Polygon",
+  "esri/layers/GraphicsLayer",
+], function (
   declare,
-  BaseWidget
+  BaseWidget,
+  Query,
+  QueryTask,
+  Graphic,
+  SFS,
+  Polygon,
+  GraphicsLayer
 ) {
   var clazz = declare([BaseWidget], {
     baseClass: "jimu-test-best-widget",
     events: [],
+    countriesLayerUrl: "",
+    selected: false,
+    selectedLayer: null,
 
     postCreate: function () {
       this.inherited(arguments);
-      const rect = this.userLink.getBoundingClientRect();
-      console.log(rect);
-    },
-
-    startup: function () {
-      const rect = this.userLink.getBoundingClientRect();
-      console.log(rect);
+      const countriesLayerId = this.map.graphicsLayerIds.find((lid) => {
+        const layer = this.map.getLayer(lid);
+        return layer.name === "Countries - countries 0";
+      });
+      if (countriesLayerId) {
+        this.countriesLayerUrl = this.map.getLayer(countriesLayerId).url;
+        this.selectedLayer = new GraphicsLayer({ id: "selectedLayer" });
+        this.map.addLayer(this.selectedLayer);
+      }
     },
 
     _getMapId: function () {
       alert(this.map.id);
+    },
+
+    selectTopPopulationCountries: function () {
+      if (!this.countriesLayerUrl || this.selected) return;
+
+      const queryTask = new QueryTask(this.countriesLayerUrl);
+      const query = new Query();
+      query.where = "1=1";
+      query.outFields = ["NAME", "POP_EST"];
+      query.returnGeometry = true;
+      query.orderByFields = ["POP_EST DESC"];
+      queryTask.on("complete", (result) => {
+        const { features } = result.featureSet;
+        const top5Features = features.slice(0, 4);
+        top5Features.forEach((f) => {
+          const polygon = new Polygon(f.geometry);
+          this.selectedLayer.add(new Graphic(polygon, new SFS(), f.attributes));
+        });
+        this.selected = true;
+      });
+      queryTask.execute(query);
     },
 
     onOpen() {
