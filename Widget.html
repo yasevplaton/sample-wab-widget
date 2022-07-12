@@ -1,7 +1,9 @@
 <div>
   <p class="red-desc">${nls.desc}</p>
   <div style="padding: 10px 0 10px 0">
-    <a href="" data-dojo-attach-point="userLink" target="_blank">USER LINK</a>
+    <a href="${config.link}" data-dojo-attach-point="userLink" target="_blank"
+      >USER LINK</a
+    >
   </div>
   <input
     type="button"
@@ -9,6 +11,9 @@
     class="jimu-btn"
     data-dojo-attach-event="click:_getMapId"
   />
-  <p class="blue-desc">${nls.coordsDesc}:</p>
+  <p>Coordinates:</p>
   <div data-dojo-attach-point="coordBlock"></div>
+  <button class="button-6" data-dojo-attach-event="click:selectTopCountries">
+    Select top 5 countries by population
+  </button>
 </div>

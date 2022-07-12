@@ -16,31 +16,60 @@
 define([
   "dojo/_base/declare",
   "jimu/BaseWidget",
+  "esri/tasks/QueryTask",
+  "esri/tasks/query",
+  "esri/geometry/Polygon",
+  "esri/symbols/SimpleFillSymbol",
+  "esri/graphic",
   "esri/geometry/webMercatorUtils",
   "esri/geometry/Point",
   "./Utils",
-], function (declare, BaseWidget, wmUtils, Point, utils) {
+], function (declare, BaseWidget, QueryTask, Query, Polygon, SFS, Graphic, wmUtils, Point, utils) {
   var clazz = declare([BaseWidget], {
-    baseClass: "jimu-test-best-widget",
-    events: [],
+    eventHandlers: [],
+
     postCreate: function () {
       this.inherited(arguments);
-      this.userLink.setAttribute("href", this.config.link);
+    },
+
+    startup: function () {
+      this.inherited(arguments);
     },
 
     _getMapId: function () {
       alert(this.map.id);
     },
-
+  
     onOpen() {
       this.map.setInfoWindowOnClick(false);
       const clickEvent = this.map.on("click", this.onMapClick.bind(this));
       this.events.push(clickEvent);
     },
-
+  
     onClose() {
       this.resetState();
     },
+
+    selectTopCountries: function () {
+      const queryTask = new QueryTask(
+        "https://services3.arcgis.com/PVrhXRCzjs03PIMX/arcgis/rest/services/Countries_v2/FeatureServer/0"
+      );
+  
+      const query = new Query();
+      query.where = "1=1";
+      query.outFields = ["NAME", "POP_EST"];
+      query.returnGeometry = true;
+      query.orderByFields = ["POP_EST DESC"];
+      queryTask.execute(query, (result) => {
+        const {features} = result;
+        const top5Features = features.slice(0, 4);
+        top5Features.forEach((f) => {
+          const polygon = new Polygon(f.geometry);
+          this.map.graphics.add(new Graphic(polygon, new SFS(), f.attributes));
+        });
+      });
+    },
+
 
     resetEvents() {
       this.events.forEach((ev) => ev.remove());
