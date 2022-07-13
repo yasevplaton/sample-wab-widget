@@ -14,10 +14,9 @@
 // limitations under the License.
 ///////////////////////////////////////////////////////////////////////////
 define([], function () {
-  const obj = {
+  return {
     round(value, decimal) {
       return Math.round(value * decimal) / decimal;
     },
   };
-  return obj;
 });

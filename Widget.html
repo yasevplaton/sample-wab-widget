@@ -13,7 +13,21 @@
   />
   <p>Coordinates:</p>
   <div data-dojo-attach-point="coordBlock"></div>
-  <button class="button-6" data-dojo-attach-event="click:selectTopCountries">
-    Select top 5 countries by population
+  <button
+    class="button-6"
+    data-dojo-attach-point="selectBtn"
+    data-dojo-attach-event="click:selectExtremeCountries"
+  >
+    Select extreme countries by population
   </button>
+  <div>
+    <button
+      class="button-55"
+      disabled
+      data-dojo-attach-point="clearBtn"
+      data-dojo-attach-event="click:clearSelection"
+    >
+      Clear selection
+    </button>
+  </div>
 </div>

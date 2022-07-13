@@ -24,7 +24,8 @@ define([
   "esri/graphic",
   "esri/geometry/webMercatorUtils",
   "esri/geometry/Point",
-  "./Utils",
+  "esri/layers/GraphicsLayer",
+  "./utils",
 ], function (
   declare,
   BaseWidget,
@@ -36,6 +37,7 @@ define([
   Graphic,
   wmUtils,
   Point,
+  GraphicsLayer,
   utils
 ) {
   var clazz = declare([BaseWidget], {
@@ -63,7 +65,7 @@ define([
       this.resetState();
     },
 
-    selectTopCountries: function () {
+    selectExtremeCountries: function () {
       const queryTask = new QueryTask(
         "https://services3.arcgis.com/PVrhXRCzjs03PIMX/arcgis/rest/services/Countries_v2/FeatureServer/0"
       );
@@ -97,9 +99,18 @@ define([
         extremeFeatures.forEach((f) => {
           const polygon = new Polygon(f.geometry);
           const style = f.populationType === "max" ? greenStyle : redStyle;
-          this.map.graphics.add(new Graphic(polygon, style));
+          this.map.graphics.add(new Graphic(polygon, style, f.attributes));
         });
+
+        this.selectBtn.disabled = true;
+        this.clearBtn.disabled = false;
       });
+    },
+
+    clearSelection: function () {
+      this.map.graphics.clear();
+      this.clearBtn.disabled = true;
+      this.selectBtn.disabled = false;
     },
 
     resetEvents() {
@@ -110,6 +121,11 @@ define([
     resetState() {
       this.resetEvents();
       this.map.setInfoWindowOnClick(true);
+    },
+
+    destroy() {
+      this.inherited(arguments);
+      this.map.graphics.clear();
     },
 
     onMapClick(event) {
