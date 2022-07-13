@@ -20,13 +20,26 @@ define([
   "esri/tasks/query",
   "esri/geometry/Polygon",
   "esri/symbols/SimpleFillSymbol",
+  "esri/symbols/SimpleLineSymbol",
   "esri/graphic",
   "esri/geometry/webMercatorUtils",
   "esri/geometry/Point",
   "./Utils",
-], function (declare, BaseWidget, QueryTask, Query, Polygon, SFS, Graphic, wmUtils, Point, utils) {
+], function (
+  declare,
+  BaseWidget,
+  QueryTask,
+  Query,
+  Polygon,
+  SFS,
+  SLS,
+  Graphic,
+  wmUtils,
+  Point,
+  utils
+) {
   var clazz = declare([BaseWidget], {
-    eventHandlers: [],
+    events: [],
 
     postCreate: function () {
       this.inherited(arguments);
@@ -39,13 +52,13 @@ define([
     _getMapId: function () {
       alert(this.map.id);
     },
-  
+
     onOpen() {
       this.map.setInfoWindowOnClick(false);
       const clickEvent = this.map.on("click", this.onMapClick.bind(this));
       this.events.push(clickEvent);
     },
-  
+
     onClose() {
       this.resetState();
     },
@@ -54,22 +67,40 @@ define([
       const queryTask = new QueryTask(
         "https://services3.arcgis.com/PVrhXRCzjs03PIMX/arcgis/rest/services/Countries_v2/FeatureServer/0"
       );
-  
+
+      const greenStyle = new SFS()
+        .setColor("#2eff43")
+        .setOutline(new SLS().setColor("#019410"));
+
+      const redStyle = new SFS()
+        .setColor("#fc5d9a")
+        .setOutline(new SLS().setColor("#a30222"));
+
       const query = new Query();
-      query.where = "1=1";
+      query.where = "NAME=SOVEREIGNT";
       query.outFields = ["NAME", "POP_EST"];
       query.returnGeometry = true;
       query.orderByFields = ["POP_EST DESC"];
       queryTask.execute(query, (result) => {
-        const {features} = result;
-        const top5Features = features.slice(0, 4);
-        top5Features.forEach((f) => {
+        const { features } = result;
+
+        const max5Features = features
+          .slice(0, 5)
+          .map((f) => ({ ...f, populationType: "max" }));
+
+        const min5Features = features
+          .slice(-5)
+          .map((f) => ({ ...f, populationType: "min" }));
+
+        const extremeFeatures = [...max5Features, ...min5Features];
+
+        extremeFeatures.forEach((f) => {
           const polygon = new Polygon(f.geometry);
-          this.map.graphics.add(new Graphic(polygon, new SFS(), f.attributes));
+          const style = f.populationType === "max" ? greenStyle : redStyle;
+          this.map.graphics.add(new Graphic(polygon, style));
         });
       });
     },
-
 
     resetEvents() {
       this.events.forEach((ev) => ev.remove());
@@ -96,5 +127,6 @@ define([
       }
     },
   });
+
   return clazz;
 });
