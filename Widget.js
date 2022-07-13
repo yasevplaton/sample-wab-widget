@@ -24,7 +24,6 @@ define([
   "esri/graphic",
   "esri/geometry/webMercatorUtils",
   "esri/geometry/Point",
-  "esri/layers/GraphicsLayer",
   "./utils",
 ], function (
   declare,
@@ -37,7 +36,6 @@ define([
   Graphic,
   wmUtils,
   Point,
-  GraphicsLayer,
   utils
 ) {
   var clazz = declare([BaseWidget], {
